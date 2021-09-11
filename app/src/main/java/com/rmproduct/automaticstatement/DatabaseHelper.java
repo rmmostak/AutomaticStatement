@@ -3,9 +3,11 @@ package com.rmproduct.automaticstatement;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -20,19 +22,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "Statement.db";
 
     //for general note
-    private static final int VERSION = 5;
-    private static final String TABLE_NAME = "AutomaticStatement";
-    private static final String ID = "id";
-    private static final String SERIAL_NO = "SerialNo";
-    private static final String SAMPLE_NO = "SampleNo";
-    private static final String DATE_ACCEPT = "Date_of_Acceptance";
-    private static final String DEPT = "Department";
-    private static final String TOTAL_MONEY = "Total_Earned_Money";
-    private static final String TAX = "Tax";
-    private static final String REMAIN_MONEY = "Remain_Money_after_deduction";
-    private static final String UNI_AUTHORITY = "University_Authority";
-    private static final String TCS_WING = "TCS_Wing";
-    private static final String LAB_CHECK = "Money_provide_the_Lab_by_check";
+    public static int VERSION = 11;
+    public static final String TABLE_NAME = "AutomaticStatement";
+    public static final String SERIAL_NO = "SerialNo";
+    public static final String SAMPLE_NO = "SampleNo";
+    public static final String DATE_ACCEPT = "DateOfAcceptance";
+    public static final String DEPT = "Department";
+    public static final String TOTAL_MONEY = "TotalEarnedMoney";
+    public static final String TAX = "Tax";
+    public static final String REMAIN_MONEY = "RemainMoneyAfterDeduction";
+    public static final String UNI_AUTHORITY = "UniversityAuthority";
+    public static final String TCS_WING = "TCSWing";
+    public static final String LAB_CHECK = "MoneyProvideTheLabByCheck";
 
     //private static final
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -50,8 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         try {
             String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ( "
-                    + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + SERIAL_NO + " INTEGER(5), "
+                    + SERIAL_NO + " INTEGER PRIMARY KEY NOT NULL, "
                     + SAMPLE_NO + " INTEGER(5), "
                     + DATE_ACCEPT + " VARCHAR(20), "
                     + DEPT + " VARCHAR(100), "
@@ -62,6 +62,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + TCS_WING + " FLOAT(15,3), "
                     + LAB_CHECK + " FLOAT(15,3) );";
             db.execSQL(CREATE_TABLE);
+
+            /*String QUERY = "INSERT INTO " + TABLE_NAME + " ( " + SERIAL_NO + ", " + SAMPLE_NO + ", " + DATE_ACCEPT + ", " + DEPT + ", " + TOTAL_MONEY + ", " + TAX + ", " + REMAIN_MONEY + ", " + UNI_AUTHORITY + ", " + TCS_WING + ", " + LAB_CHECK + ") VALUES ( 1001, null, null, 'Total', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);";
+            db.execSQL(QUERY);*/
 
         } catch (Exception e) {
             Toast.makeText(context, "Error: " + e, Toast.LENGTH_LONG).show();
@@ -83,8 +86,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public long makeStatementRow(int slNo, int sampleNo, String dateAccept, String dept, float totalMoney, float tax, float remainMoney, float uniAuthority, float tcsWing, float labCheck) {
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-
-        //String QUERY= "INSERT INTO "+TABLE_NAME+" ( "+SERIAL_NO+", "+SAMPLE_NO+", "+DATE_ACCEPT+", "+DEPT+", "+TOTAL_MONEY+", "+TAX+", "+REMAIN_MONEY+", "+UNI_AUTHORITY+", "+TCS_WING+", "+LAB_CHECK+") VALUES ( "+slNo+", "+sampleNo+", "+dateAccept+", "+dept+", "+totalMoney+", "+tax+", "+remainMoney+", "+uniAuthority+", "+tcsWing+", "+labCheck+");";
+        /*String QUERY = "INSERT INTO " + TABLE_NAME + " ( " + SERIAL_NO + ", " + SAMPLE_NO + ", " + DATE_ACCEPT + ", " + DEPT + ", " + TOTAL_MONEY + ", " + TAX + ", " + REMAIN_MONEY + ", " + UNI_AUTHORITY + ", " + TCS_WING + ", " + LAB_CHECK + ") VALUES ( 'Serial\nNo', 'Sample\nNo', 'Date of\nAcceptance', 'Department', 'Total Earned\nMoney', 'Tax 10%', 'Remaining Money\nafter deduction', 'University\nAuthority 25%', 'TCS Wing\n5%', 'Money provide\nthe Lab by check');";
+        sqLiteDatabase.execSQL(QUERY);*/
 
         ContentValues values = new ContentValues();
         values.put(SERIAL_NO, slNo);
@@ -130,8 +133,74 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return models;
     }
 
-    public int deleteStatement(String id) {
+    public void deleteStatement(int id) {
+        try {
+            SQLiteDatabase database = this.getWritableDatabase();
+            String deleteQuery = "DELETE FROM " + TABLE_NAME + " WHERE " + SERIAL_NO + " = " + id;
+            database.execSQL(deleteQuery);
+        } catch (Exception e) {
+            Log.d("Error", e.getMessage());
+        }
+    }
+
+    public void updateRow(String key) {
         SQLiteDatabase database = this.getWritableDatabase();
-        return database.delete(TABLE_NAME, ID + " = ?", new String[]{id});
+
+    }
+
+    public boolean dropStatement(String table) {
+        boolean state = false;
+        try {
+            SQLiteDatabase database = this.getWritableDatabase();
+            String dropQuery = "DROP TABLE " + table + ";";
+            database.execSQL(dropQuery);
+            onCreate(database);
+            state = true;
+        } catch (Exception e) {
+            Log.d("Error", e.getMessage());
+            state = false;
+        }
+        return state;
+    }
+
+    public long countRow() {
+        SQLiteDatabase database = this.getWritableDatabase();
+        return DatabaseUtils.queryNumEntries(database, TABLE_NAME);
+    }
+
+    public String getValue(String keys, String clue) {
+        String value = "";
+        try {
+            SQLiteDatabase database = this.getWritableDatabase();
+            String getValue = "SELECT " + keys + " FROM " + TABLE_NAME + " WHERE " + keys + " = '" + clue + "'";
+            Cursor cursor = database.rawQuery(getValue, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    value = cursor.getString(cursor.getColumnIndex(keys));
+                } while (cursor.moveToNext());
+            }
+            database.close();
+        } catch (Exception e) {
+            Log.d("Error", e.getMessage());
+        }
+        return value;
+    }
+
+    public float getSum(String clue) {
+        float sum = 0;
+        try {
+            SQLiteDatabase database = this.getWritableDatabase();
+            String query = "SELECT " + clue + " FROM " + TABLE_NAME;
+            Cursor cursor = database.rawQuery(query, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    sum = cursor.getFloat(cursor.getColumnIndex(clue)) + sum;
+                } while (cursor.moveToNext());
+            }
+            database.close();
+        } catch (Exception e) {
+            Log.d("Error", e.getMessage());
+        }
+        return sum;
     }
 }

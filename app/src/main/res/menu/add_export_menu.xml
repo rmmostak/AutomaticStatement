@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/deleteTable"
+        android:icon="@drawable/ic_delete"
+        android:title="Delete Table"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/exportData"
-        android:icon="@drawable/ic_export"
+        android:icon="@drawable/export_icon_24"
         android:title="Export Data"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/aboutApp"
         android:title="About App"

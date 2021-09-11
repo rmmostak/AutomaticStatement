@@ -11,95 +11,99 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="20dp"
+        android:focusable="true"
+        android:clickable="true"
         android:backgroundTint="@color/purple_700"
-        android:src="@drawable/ic_baseline_add_24" />
+        android:src="@drawable/ic_baseline_add_24"
+        android:contentDescription="Add Entry" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="60dp"
-                    style="@style/textTitleStyle"
-                    android:text="Serial\nNo" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="60dp"
-                    style="@style/textTitleStyle"
-                    android:text="Sample\nNo" />
+                    <TextView
+                        android:id="@+id/serial"
+                        style="@style/textTitleStyle"
+                        android:layout_width="60dp"
+                        android:text="Serial\nNo" />
 
-                <TextView
-                    android:layout_width="100dp"
-                    style="@style/textTitleStyle"
-                    android:text="Date of\nAcceptance" />
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="60dp"
+                        android:text="Sample\nNo" />
 
-                <TextView
-                    android:layout_width="80dp"
-                    style="@style/textTitleStyle"
-                    android:text="Department" />
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="100dp"
+                        android:text="Date of\nAcceptance" />
 
-                <TextView
-                    android:layout_width="100dp"
-                    style="@style/textTitleStyle"
-                    android:text="Total Earned\nMoney" />
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="80dp"
+                        android:text="Department" />
 
-                <TextView
-                    android:layout_width="60dp"
-                    style="@style/textTitleStyle"
-                    android:text="Tax 10%" />
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="100dp"
+                        android:text="Total Earned\nMoney" />
 
-                <TextView
-                    android:layout_width="120dp"
-                    style="@style/textTitleStyle"
-                    android:text="Remaining Money\nafter deduction" />
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="60dp"
+                        android:text="Tax 10%" />
 
-                <TextView
-                    android:layout_width="100dp"
-                    style="@style/textTitleStyle"
-                    android:text="University\nAuthority 25%" />
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="120dp"
+                        android:text="Remaining Money\nafter deduction" />
 
-                <TextView
-                    android:layout_width="60dp"
-                    style="@style/textTitleStyle"
-                    android:text="TCS Wing 5%" />
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="100dp"
+                        android:text="University\nAuthority 25%" />
 
-                <TextView
-                    android:layout_width="120dp"
-                    style="@style/textTitleStyle"
-                    android:text="Money provide\n the Lab by check" />
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="60dp"
+                        android:text="TCS Wing 5%" />
+
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="120dp"
+                        android:text="Money provide\n the Lab by check" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/black" />
+
+                <ListView
+                    android:id="@+id/stateList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:focusable="true" />
+
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"/>
-
-            <ListView
-                android:id="@+id/stateList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-
-        </LinearLayout>
-
-    </HorizontalScrollView>
+        </HorizontalScrollView>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

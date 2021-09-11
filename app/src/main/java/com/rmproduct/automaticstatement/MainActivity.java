@@ -1,29 +1,44 @@
 package com.rmproduct.automaticstatement;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.ajts.androidmads.library.SQLiteToExcel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.apache.poi.ss.formula.functions.T;
+
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,9 +46,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.rmproduct.automaticstatement.DatabaseHelper.LAB_CHECK;
+import static com.rmproduct.automaticstatement.DatabaseHelper.REMAIN_MONEY;
+import static com.rmproduct.automaticstatement.DatabaseHelper.TABLE_NAME;
+import static com.rmproduct.automaticstatement.DatabaseHelper.TCS_WING;
+import static com.rmproduct.automaticstatement.DatabaseHelper.TOTAL_MONEY;
+import static com.rmproduct.automaticstatement.DatabaseHelper.UNI_AUTHORITY;
+
 public class MainActivity extends AppCompatActivity {
 
     private static float TAX = 10, UNI_AUTH = 25, TCS = 5, PERCENT = 100;
+    public static final int REQUEST_EXTERNAL_PERMISSION_CODE = 666;
 
     private ListView stateList;
     private FloatingActionButton addEntry;
@@ -48,47 +73,47 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            databaseHelper = new DatabaseHelper(this);
-            SQLiteDatabase database = databaseHelper.getWritableDatabase();
-        }
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        builder.detectFileUriExposure();
+
+        databaseHelper = new DatabaseHelper(this);
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
 
         stateList = findViewById(R.id.stateList);
         addEntry = findViewById(R.id.addEntry);
         refreshLayout = findViewById(R.id.refreshLayout);
 
-        int rowID = getIntent().getIntExtra("rowID", 1);
-        Log.d("row", "ID " + rowID);
+        /*Log.d("Total", databaseHelper.getSum(DatabaseHelper.TOTAL_MONEY) + "TK\n" +
+                databaseHelper.getSum(DatabaseHelper.TAX) + "TK\n" +
+                databaseHelper.getSum(DatabaseHelper.REMAIN_MONEY) + "TK");*/
 
-        if (databaseHelper.statementModelList().isEmpty()) {
-            return;
-        } else {
+        try {
             modelList.addAll(databaseHelper.statementModelList());
             adapter = new StatementAdapter(MainActivity.this, modelList);
             stateList.setAdapter(adapter);
 
+        } catch (Exception e) {
+            Log.d("Exception", e.getMessage());
         }
 
         refreshLayout.setOnRefreshListener(() -> {
-            modelList.clear();
-            if (databaseHelper.statementModelList().isEmpty()) {
-                return;
-            } else {
+            try {
+                modelList.clear();
                 modelList.addAll(databaseHelper.statementModelList());
                 adapter = new StatementAdapter(MainActivity.this, modelList);
                 stateList.setAdapter(adapter);
                 refreshLayout.setRefreshing(false);
-            }
-        });
 
-        stateList.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return false;
+            } catch (NullPointerException e) {
+                Log.d("Exception", e.getMessage());
+                refreshLayout.setRefreshing(false);
             }
+            refreshLayout.setRefreshing(false);
         });
 
         addEntry.setOnClickListener(v -> {
+            Log.d("Exception", "e.getMessage()");
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
             LayoutInflater inflater = getLayoutInflater();
             final View dialogView = inflater.inflate(R.layout.add_entry_layout, null);
@@ -100,8 +125,14 @@ public class MainActivity extends AppCompatActivity {
             EditText addDept = dialogView.findViewById(R.id.addDept);
             EditText sampleNo = dialogView.findViewById(R.id.addSample);
             TextView pickDate = dialogView.findViewById(R.id.pickDate);
-            Button addEntry = dialogView.findViewById(R.id.submitData);
-            Button cancel = dialogView.findViewById(R.id.cancel);
+            ImageButton addEntry = dialogView.findViewById(R.id.submitData);
+            ImageButton cancel = dialogView.findViewById(R.id.cancel);
+
+            if (databaseHelper.countRow() < 1) {
+                serialNo.setText("1");
+            } else {
+                serialNo.setText(String.valueOf(databaseHelper.countRow() + 1));
+            }
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM YYYY", Locale.getDefault());
             String str = sdf.format(new Date());
@@ -136,15 +167,22 @@ public class MainActivity extends AppCompatActivity {
                         if (!addedAmount.getText().toString().equals("")) {
                             if (!addDept.getText().toString().equals("")) {
 
-                                String slSt = serialNo.getText().toString();
-                                int slNo = Integer.parseInt(slSt);
-                                int sample = Integer.parseInt(sampleNo.getText().toString());
-                                float amountLong = Float.parseFloat(addedAmount.getText().toString());
-                                String deptSt = addDept.getText().toString();
-                                setDataToDatabase(slNo, sample, amountLong, deptSt, dateSt);
-
-                                alertDialog.dismiss();
-
+                                try {
+                                    String slSt = serialNo.getText().toString();
+                                    int slNo = Integer.parseInt(slSt);
+                                    int sample = Integer.parseInt(sampleNo.getText().toString());
+                                    float amountLong = Float.parseFloat(addedAmount.getText().toString());
+                                    String deptSt = addDept.getText().toString();
+                                    if (!slSt.equals(databaseHelper.getValue(DatabaseHelper.SERIAL_NO, slSt))) {
+                                        setDataToDatabase(slNo, sample, amountLong, deptSt, dateSt);
+                                        alertDialog.dismiss();
+                                    } else {
+                                        serialNo.setError("Your entered serial no is exist,\n please enter a new one!");
+                                        serialNo.requestFocus();
+                                    }
+                                } catch (Exception e) {
+                                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
                             } else {
                                 addDept.setError("Please enter department!!");
                                 addDept.requestFocus();
@@ -175,12 +213,16 @@ public class MainActivity extends AppCompatActivity {
         float labCheck = remainMoney - uniAuthority - tcsWing;
         //Log.d("check", "\n" + slNo + "\n" + sampleNo + "\n" + dateSt + "\n" + deptSt + "\n" + amount + "tk\n" + tax + "tk\n" + remainMoney + "tk\n" + uniAuthority + "tk\n" + tcsWing + "tk\n" + labCheck + "tk");
 
-        long row = databaseHelper.makeStatementRow(slNo, sampleNo, dateSt, deptSt, amount, tax, remainMoney, uniAuthority, tcsWing, labCheck);
+        try {
+            long row = databaseHelper.makeStatementRow(slNo, sampleNo, dateSt, deptSt, amount, tax, remainMoney, uniAuthority, tcsWing, labCheck);
 
-        if (row == -1) {
-            Toast.makeText(getApplicationContext(), "Data insertion failed!", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "Your entry is added!", Toast.LENGTH_LONG).show();
+            if (row == -1) {
+                Toast.makeText(getApplicationContext(), "Data insertion failed!", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Your entry is added!", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Log.d("Exception", e.getMessage());
         }
     }
 
@@ -190,16 +232,118 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public static final String[] PERMISSIONS_EXTERNAL_STORAGE = {
+            READ_EXTERNAL_STORAGE,
+            WRITE_EXTERNAL_STORAGE
+    };
+
+    public boolean checkExternalStoragePermission(Activity activity) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            return true;
+        }
+
+        int readStoragePermissionState = ContextCompat.checkSelfPermission(activity, READ_EXTERNAL_STORAGE);
+        int writeStoragePermissionState = ContextCompat.checkSelfPermission(activity, WRITE_EXTERNAL_STORAGE);
+        boolean externalStoragePermissionGranted = readStoragePermissionState == PackageManager.PERMISSION_GRANTED &&
+                writeStoragePermissionState == PackageManager.PERMISSION_GRANTED;
+        if (!externalStoragePermissionGranted) {
+            requestPermissions(PERMISSIONS_EXTERNAL_STORAGE, REQUEST_EXTERNAL_PERMISSION_CODE);
+        }
+
+        return externalStoragePermissionGranted;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == REQUEST_EXTERNAL_PERMISSION_CODE) {
+                if (checkExternalStoragePermission(MainActivity.this)) {
+                    // Continue with your action after permission request succeed
+                }
+            }
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.aboutApp) {
-
+            startActivity(new Intent(MainActivity.this, AboutActivity.class));
 
         } else if (id == R.id.exportData) {
+            if (checkExternalStoragePermission(MainActivity.this)) {
+                String directory = Environment.getExternalStorageDirectory().getPath() + "/RmProduct/Automatic/Statement/Export/";
+                File file = new File(directory);
+                if (!file.exists()) {
+                    Log.v("File Created", String.valueOf(file.mkdirs()));
+                }
+                SQLiteToExcel sqLiteToExcel = new SQLiteToExcel(MainActivity.this, "Statement.db", directory);
 
+                databaseHelper.makeStatementRow(1001, 0, "", "Total", databaseHelper.getSum(TOTAL_MONEY), databaseHelper.getSum(DatabaseHelper.TAX), databaseHelper.getSum(REMAIN_MONEY), databaseHelper.getSum(UNI_AUTHORITY), databaseHelper.getSum(TCS_WING), databaseHelper.getSum(LAB_CHECK));
+
+                sqLiteToExcel.exportAllTables("export.xls", new SQLiteToExcel.ExportListener() {
+                    @Override
+                    public void onStart() {
+                        Log.d("Started", "Running!");
+                    }
+
+                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                    @Override
+                    public void onCompleted(String filePath) {
+                        databaseHelper.deleteStatement(1001);
+
+                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                        emailIntent.setType("text/plain");
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Automatic Statement_" + dateSt);
+
+                        File root = new File("file://" + filePath);
+                        if (!file.exists() || !file.canRead()) {
+                            return;
+                        }
+                        Uri uri;
+                        if (Build.VERSION.SDK_INT < 24) {
+                            uri = Uri.fromFile(root);
+                        } else {
+                            uri = Uri.parse(root.getPath()); // My work-around for new SDKs, worked for me in Android 10 using Solid Explorer Text Editor as the external editor.
+                        }
+                        Log.d("root", uri.toString());
+                        emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                        startActivity(Intent.createChooser(emailIntent, "Share file using..."));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.d("export", e.getMessage());
+                    }
+                });
+            } else {
+                Log.d("Error", "Permission denied!");
+            }
+        } else if (id == R.id.deleteTable) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+            dialogBuilder.setTitle("Do you want to delete this statement data?");
+            dialogBuilder.setPositiveButton("Yes", (dialog, which) -> {
+
+                try {
+                    if (databaseHelper.dropStatement(TABLE_NAME)) {
+                        //sendEmail(filePath);
+                        Toast.makeText(MainActivity.this, "You have successfully deleted statement data!", Toast.LENGTH_LONG).show();
+                    } else {
+                        //sendEmail(filePath);
+                        Toast.makeText(MainActivity.this, "Something went wrong, Please try again later!", Toast.LENGTH_LONG).show();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+                dialog.dismiss();
+
+            }).setNegativeButton("Cancel", (dialog, which) -> {
+                dialog.dismiss();
+            }).show();
         }
         return super.onOptionsItemSelected(item);
     }
