@@ -11,11 +11,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="20dp"
-        android:focusable="true"
-        android:clickable="true"
         android:backgroundTint="@color/purple_700"
-        android:src="@drawable/ic_baseline_add_24"
-        android:contentDescription="Add Entry" />
+        android:clickable="true"
+        android:contentDescription="Add Entry"
+        android:focusable="true"
+        android:src="@drawable/ic_baseline_add_24" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
@@ -79,18 +79,50 @@
 
                     <TextView
                         style="@style/textTitleStyle"
-                        android:layout_width="60dp"
+                        android:layout_width="80dp"
                         android:text="TCS Wing 5%" />
 
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="120dp"
-                        android:text="Money provide\n the Lab by check" />
+                        android:text="Money provide\n to the Department" />
+
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="100dp"
+                        android:text="Test Cost 40%" />
+
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="80dp"
+                        android:text="PI 10%" />
+
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="110dp"
+                        android:text="Chair/Director 5%" />
+
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="100dp"
+                        android:text="Teachers 20%" />
+
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="100dp"
+                        android:text="Lab Development\n15%" />
+
+                    <TextView
+                        style="@style/textTitleStyle"
+                        android:layout_width="60dp"
+                        android:text="Staff 10%" />
+
+
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="0.5dp"
                     android:background="@color/black" />
 
                 <ListView

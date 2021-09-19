@@ -5,23 +5,29 @@ import java.util.Date;
 public class StatementModel {
     private int slNo, sampleNo, id;
     private String dept, dateAccept;
-    private float totalEarned, tax, remainMoney, uniAuthority, tcsWing, labCheck;
+    private float totalEarned, tax, remainMoney, uniAuthority, tcsWing, labCheck, testCost, pi, chair, teachers, labDev, staff;
 
     public StatementModel() {
     }
 
-    public StatementModel(int id, int slNo, int sampleNo, String dateAccept, String dept, float totalEarned, float tax, float remainMoney, float uniAuthority, float tcsWing, float labCheck) {
-        this.id = id;
+    public StatementModel(int slNo, int sampleNo, int id, String dept, String dateAccept, float totalEarned, float tax, float remainMoney, float uniAuthority, float tcsWing, float labCheck, float testCost, float pi, float chair, float teachers, float labDev, float staff) {
         this.slNo = slNo;
         this.sampleNo = sampleNo;
-        this.dateAccept = dateAccept;
+        this.id = id;
         this.dept = dept;
+        this.dateAccept = dateAccept;
         this.totalEarned = totalEarned;
         this.tax = tax;
         this.remainMoney = remainMoney;
         this.uniAuthority = uniAuthority;
         this.tcsWing = tcsWing;
         this.labCheck = labCheck;
+        this.testCost = testCost;
+        this.pi = pi;
+        this.chair = chair;
+        this.teachers = teachers;
+        this.labDev = labDev;
+        this.staff = staff;
     }
 
     public int getId() {
@@ -110,5 +116,53 @@ public class StatementModel {
 
     public void setLabCheck(float labCheck) {
         this.labCheck = labCheck;
+    }
+
+    public float getTestCost() {
+        return testCost;
+    }
+
+    public void setTestCost(float testCost) {
+        this.testCost = testCost;
+    }
+
+    public float getPi() {
+        return pi;
+    }
+
+    public void setPi(float pi) {
+        this.pi = pi;
+    }
+
+    public float getChair() {
+        return chair;
+    }
+
+    public void setChair(float chair) {
+        this.chair = chair;
+    }
+
+    public float getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(float teachers) {
+        this.teachers = teachers;
+    }
+
+    public float getLabDev() {
+        return labDev;
+    }
+
+    public void setLabDev(float labDev) {
+        this.labDev = labDev;
+    }
+
+    public float getStaff() {
+        return staff;
+    }
+
+    public void setStaff(float staff) {
+        this.staff = staff;
     }
 }

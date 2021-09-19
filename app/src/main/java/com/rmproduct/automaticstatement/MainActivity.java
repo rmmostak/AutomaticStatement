@@ -2,7 +2,6 @@ package com.rmproduct.automaticstatement;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,9 +15,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -30,13 +26,10 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ajts.androidmads.library.SQLiteToExcel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.apache.poi.ss.formula.functions.T;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -52,12 +45,13 @@ import static com.rmproduct.automaticstatement.DatabaseHelper.LAB_CHECK;
 import static com.rmproduct.automaticstatement.DatabaseHelper.REMAIN_MONEY;
 import static com.rmproduct.automaticstatement.DatabaseHelper.TABLE_NAME;
 import static com.rmproduct.automaticstatement.DatabaseHelper.TCS_WING;
+import static com.rmproduct.automaticstatement.DatabaseHelper.TEST_COST;
 import static com.rmproduct.automaticstatement.DatabaseHelper.TOTAL_MONEY;
 import static com.rmproduct.automaticstatement.DatabaseHelper.UNI_AUTHORITY;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static float TAX = 10, UNI_AUTH = 25, TCS = 5, PERCENT = 100;
+    private static float TAX = 10, UNI_AUTH = 25, TCS = 5, TEST = 40, PI = 10, CHAIR = 5, TEACHERS = 20, LAB_DEV = 15, STAFF = 10, PERCENT = 100;
     public static final int REQUEST_EXTERNAL_PERMISSION_CODE = 666;
 
     private ListView stateList;
@@ -128,10 +122,14 @@ public class MainActivity extends AppCompatActivity {
             ImageButton addEntry = dialogView.findViewById(R.id.submitData);
             ImageButton cancel = dialogView.findViewById(R.id.cancel);
 
-            if (databaseHelper.countRow() < 1) {
-                serialNo.setText("1");
-            } else {
-                serialNo.setText(String.valueOf(databaseHelper.countRow() + 1));
+            try {
+                if (databaseHelper.countRow() < 1) {
+                    serialNo.setText("1");
+                } else {
+                    serialNo.setText(String.valueOf(databaseHelper.countRow() + 1));
+                }
+            } catch (Exception e) {
+                Log.d("Error", e.getMessage());
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM YYYY", Locale.getDefault());
@@ -211,10 +209,16 @@ public class MainActivity extends AppCompatActivity {
         float uniAuthority = (remainMoney * UNI_AUTH) / PERCENT;
         float tcsWing = (remainMoney * TCS) / PERCENT;
         float labCheck = remainMoney - uniAuthority - tcsWing;
-        //Log.d("check", "\n" + slNo + "\n" + sampleNo + "\n" + dateSt + "\n" + deptSt + "\n" + amount + "tk\n" + tax + "tk\n" + remainMoney + "tk\n" + uniAuthority + "tk\n" + tcsWing + "tk\n" + labCheck + "tk");
+        float labTest = (labCheck * TEST) / PERCENT;
+        float pi = (labCheck * PI) / PERCENT;
+        float chair = (labCheck * CHAIR) / PERCENT;
+        float teachers = (labCheck * TEACHERS) / PERCENT;
+        float labDev = (labCheck * LAB_DEV) / PERCENT;
+        float staff = (labCheck * STAFF) / PERCENT;
+        //Log.d("check", "\n" + slNo + "\n" + sampleNo + "\n" + dateSt + "\n" + deptSt + "\n" + amount + "tk\n" + tax + "tk\n" + remainMoney + "tk\n" + uniAuthority + "tk\n" + tcsWing + "tk\n" + labCheck + "tk\n"+labTest+"tk\n"+pi+"tk\n"+chair+"tk\n"+teachers+"tk\n"+labDev+"tk\n"+staff+"tk");
 
         try {
-            long row = databaseHelper.makeStatementRow(slNo, sampleNo, dateSt, deptSt, amount, tax, remainMoney, uniAuthority, tcsWing, labCheck);
+            long row = databaseHelper.makeStatementRow(slNo, sampleNo, dateSt, deptSt, amount, tax, remainMoney, uniAuthority, tcsWing, labCheck, labTest, pi, chair, teachers, labDev, staff);
 
             if (row == -1) {
                 Toast.makeText(getApplicationContext(), "Data insertion failed!", Toast.LENGTH_LONG).show();
@@ -283,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 SQLiteToExcel sqLiteToExcel = new SQLiteToExcel(MainActivity.this, "Statement.db", directory);
 
-                databaseHelper.makeStatementRow(1001, 0, "", "Total", databaseHelper.getSum(TOTAL_MONEY), databaseHelper.getSum(DatabaseHelper.TAX), databaseHelper.getSum(REMAIN_MONEY), databaseHelper.getSum(UNI_AUTHORITY), databaseHelper.getSum(TCS_WING), databaseHelper.getSum(LAB_CHECK));
+                databaseHelper.makeStatementRow(10000, 0, dateSt, "Total", databaseHelper.getSum(TOTAL_MONEY), databaseHelper.getSum(DatabaseHelper.TAX), databaseHelper.getSum(REMAIN_MONEY), databaseHelper.getSum(UNI_AUTHORITY), databaseHelper.getSum(TCS_WING), databaseHelper.getSum(LAB_CHECK), databaseHelper.getSum(TEST_COST), databaseHelper.getSum(DatabaseHelper.PI), databaseHelper.getSum(DatabaseHelper.CHAIR), databaseHelper.getSum(DatabaseHelper.TEACHERS), databaseHelper.getSum(DatabaseHelper.LAB_DEV), databaseHelper.getSum(DatabaseHelper.STAFF));
 
                 sqLiteToExcel.exportAllTables("export.xls", new SQLiteToExcel.ExportListener() {
                     @Override
@@ -294,11 +298,15 @@ public class MainActivity extends AppCompatActivity {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
                     public void onCompleted(String filePath) {
-                        databaseHelper.deleteStatement(1001);
+                        databaseHelper.deleteStatement(10000);
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM YYYY", Locale.getDefault());
+                        String str = sdf.format(new Date());
 
                         Intent emailIntent = new Intent(Intent.ACTION_SEND);
                         emailIntent.setType("text/plain");
-                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Automatic Statement_" + dateSt);
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "CSIRL JUST Exported on " + str);
+                        Log.d("tag", "CSIRL JUST Exported on " + str);
 
                         File root = new File("file://" + filePath);
                         if (!file.exists() || !file.canRead()) {
@@ -325,7 +333,8 @@ public class MainActivity extends AppCompatActivity {
             }
         } else if (id == R.id.deleteTable) {
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
-            dialogBuilder.setTitle("Do you want to delete this statement data?");
+            dialogBuilder.setTitle("Alert!");
+            dialogBuilder.setMessage("Do you want to delete this statement data?");
             dialogBuilder.setPositiveButton("Yes", (dialog, which) -> {
 
                 try {

@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "Statement.db";
 
     //for general note
-    public static int VERSION = 11;
+    public static int VERSION = 21;
     public static final String TABLE_NAME = "AutomaticStatement";
     public static final String SERIAL_NO = "SerialNo";
     public static final String SAMPLE_NO = "SampleNo";
@@ -33,7 +33,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String REMAIN_MONEY = "RemainMoneyAfterDeduction";
     public static final String UNI_AUTHORITY = "UniversityAuthority";
     public static final String TCS_WING = "TCSWing";
-    public static final String LAB_CHECK = "MoneyProvideTheLabByCheck";
+    public static final String LAB_CHECK = "MoneyProvideToTheDept";
+    public static final String TEST_COST = "TestCost";
+    public static final String PI = "PI";
+    public static final String CHAIR = "Chair";
+    public static final String TEACHERS = "Teachers";
+    public static final String LAB_DEV = "LabDevelopment";
+    public static final String STAFF = "Staff";
 
     //private static final
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -55,12 +61,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + SAMPLE_NO + " INTEGER(5), "
                     + DATE_ACCEPT + " VARCHAR(20), "
                     + DEPT + " VARCHAR(100), "
-                    + TOTAL_MONEY + " FLOAT(15,3), "
-                    + TAX + " FLOAT(15,3), "
-                    + REMAIN_MONEY + " FLOAT(15,3), "
-                    + UNI_AUTHORITY + " FLOAT(15,3), "
-                    + TCS_WING + " FLOAT(15,3), "
-                    + LAB_CHECK + " FLOAT(15,3) );";
+                    + TOTAL_MONEY + " FLOAT(15.3), "
+                    + TAX + " FLOAT(15.3), "
+                    + REMAIN_MONEY + " FLOAT(15.3), "
+                    + UNI_AUTHORITY + " FLOAT(15.3), "
+                    + TCS_WING + " FLOAT(15.3), "
+                    + LAB_CHECK + " FLOAT(15.3), "
+                    + TEST_COST + " FLOAT(15.3), "
+                    + PI + " FLOAT(15.3), "
+                    + CHAIR + " FLOAT(15.3), "
+                    + TEACHERS + " FLOAT(15.3), "
+                    + LAB_DEV + " FLOAT(15.3), "
+                    + STAFF + " FLOAT(15.3));";
             db.execSQL(CREATE_TABLE);
 
             /*String QUERY = "INSERT INTO " + TABLE_NAME + " ( " + SERIAL_NO + ", " + SAMPLE_NO + ", " + DATE_ACCEPT + ", " + DEPT + ", " + TOTAL_MONEY + ", " + TAX + ", " + REMAIN_MONEY + ", " + UNI_AUTHORITY + ", " + TCS_WING + ", " + LAB_CHECK + ") VALUES ( 1001, null, null, 'Total', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);";
@@ -83,7 +95,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public long makeStatementRow(int slNo, int sampleNo, String dateAccept, String dept, float totalMoney, float tax, float remainMoney, float uniAuthority, float tcsWing, float labCheck) {
+    public long makeStatementRow(int slNo, int sampleNo, String dateAccept, String dept, float totalMoney, float tax, float remainMoney, float uniAuthority, float tcsWing, float labCheck, float testCost, float pi, float chair, float teachers, float labDev, float staff) {
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         /*String QUERY = "INSERT INTO " + TABLE_NAME + " ( " + SERIAL_NO + ", " + SAMPLE_NO + ", " + DATE_ACCEPT + ", " + DEPT + ", " + TOTAL_MONEY + ", " + TAX + ", " + REMAIN_MONEY + ", " + UNI_AUTHORITY + ", " + TCS_WING + ", " + LAB_CHECK + ") VALUES ( 'Serial\nNo', 'Sample\nNo', 'Date of\nAcceptance', 'Department', 'Total Earned\nMoney', 'Tax 10%', 'Remaining Money\nafter deduction', 'University\nAuthority 25%', 'TCS Wing\n5%', 'Money provide\nthe Lab by check');";
@@ -100,6 +112,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(UNI_AUTHORITY, uniAuthority);
         values.put(TCS_WING, tcsWing);
         values.put(LAB_CHECK, labCheck);
+        values.put(TEST_COST, testCost);
+        values.put(PI, pi);
+        values.put(CHAIR, chair);
+        values.put(TEACHERS, teachers);
+        values.put(LAB_DEV, labDev);
+        values.put(STAFF, staff);
 
         return sqLiteDatabase.insert(TABLE_NAME, null, values);
         //sqLiteDatabase.execSQL(QUERY);
@@ -124,6 +142,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 model.setUniAuthority(cursor.getFloat(cursor.getColumnIndex(UNI_AUTHORITY)));
                 model.setTcsWing(cursor.getFloat(cursor.getColumnIndex(TCS_WING)));
                 model.setLabCheck(cursor.getFloat(cursor.getColumnIndex(LAB_CHECK)));
+                model.setTestCost(cursor.getFloat(cursor.getColumnIndex(TEST_COST)));
+                model.setPi(cursor.getFloat(cursor.getColumnIndex(PI)));
+                model.setChair(cursor.getFloat(cursor.getColumnIndex(CHAIR)));
+                model.setTeachers(cursor.getFloat(cursor.getColumnIndex(TEACHERS)));
+                model.setLabDev(cursor.getFloat(cursor.getColumnIndex(LAB_DEV)));
+                model.setStaff(cursor.getFloat(cursor.getColumnIndex(STAFF)));
 
                 models.add(model);
             } while ((cursor.moveToNext()));

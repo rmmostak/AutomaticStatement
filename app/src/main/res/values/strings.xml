@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">Statement</string>
+    <string name="app_name">CSIRL JUST</string>
     <string name="about_dev">Design &amp; Development by\n<i><b>Mustak Ahmmed,</b> CSE-16, JUST</i></string>
+    <string name="welcome_note">Welcome to CSIRL JUST Mobile Application</string>
 </resources>

@@ -24,7 +24,7 @@ public class StatementAdapter extends ArrayAdapter<StatementModel> {
 
     private Activity context;
     private List<StatementModel> modelList;
-    private TextView slNo, sampleNo, dateAccept, dept, totalMoney, tax, remainMoney, uniAuthority, tcsWing, labCheck;
+    private TextView slNo, sampleNo, dateAccept, dept, totalMoney, tax, remainMoney, uniAuthority, tcsWing, labCheck, testCost, pi, chair, teachers, labDev, staff;
     private LinearLayout linearRow;
     private DatabaseHelper databaseHelper;
 
@@ -50,7 +50,13 @@ public class StatementAdapter extends ArrayAdapter<StatementModel> {
         uniAuthority = itemView.findViewById(R.id.uniAuthority);
         tcsWing = itemView.findViewById(R.id.tcsWing);
         labCheck = itemView.findViewById(R.id.moneyCheck);
-        linearRow=itemView.findViewById(R.id.linearRow);
+        linearRow = itemView.findViewById(R.id.linearRow);
+        testCost = itemView.findViewById(R.id.testCost);
+        pi = itemView.findViewById(R.id.pi);
+        chair = itemView.findViewById(R.id.chair);
+        teachers = itemView.findViewById(R.id.teachers);
+        labDev = itemView.findViewById(R.id.labDev);
+        staff = itemView.findViewById(R.id.staff);
 
         StatementModel model = modelList.get(position);
 
@@ -64,13 +70,20 @@ public class StatementAdapter extends ArrayAdapter<StatementModel> {
         uniAuthority.setText(String.valueOf(model.getUniAuthority()));
         tcsWing.setText(String.valueOf(model.getTcsWing()));
         labCheck.setText(String.valueOf(model.getLabCheck()));
+        testCost.setText(String.valueOf(model.getTestCost()));
+        pi.setText(String.valueOf(model.getPi()));
+        chair.setText(String.valueOf(model.getChair()));
+        teachers.setText(String.valueOf(model.getTeachers()));
+        labDev.setText(String.valueOf(model.getLabDev()));
+        staff.setText(String.valueOf(model.getStaff()));
 
         linearRow.setOnClickListener(v -> {
             databaseHelper = new DatabaseHelper(v.getContext());
             SQLiteDatabase database = databaseHelper.getWritableDatabase();
 
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(v.getContext());
-            dialogBuilder.setTitle("Are you sure to delete this row?");
+            dialogBuilder.setTitle("Alert!");
+            dialogBuilder.setMessage("Are you sure to delete this row?");
             dialogBuilder.setPositiveButton("Yes", (dialog, which) -> {
 
                 databaseHelper.deleteStatement(model.getSlNo());

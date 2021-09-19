@@ -66,18 +66,48 @@
             <TextView
                 android:id="@+id/tcsWing"
                 style="@style/textTitleStyle"
-                android:layout_width="60dp" />
+                android:layout_width="80dp" />
 
             <TextView
                 android:id="@+id/moneyCheck"
                 style="@style/textTitleStyle"
                 android:layout_width="120dp" />
 
+            <TextView
+                android:id="@+id/testCost"
+                style="@style/textTitleStyle"
+                android:layout_width="100dp" />
+
+            <TextView
+                android:id="@+id/pi"
+                style="@style/textTitleStyle"
+                android:layout_width="80dp" />
+
+            <TextView
+                android:id="@+id/chair"
+                style="@style/textTitleStyle"
+                android:layout_width="100dp" />
+
+            <TextView
+                android:id="@+id/teachers"
+                style="@style/textTitleStyle"
+                android:layout_width="100dp" />
+
+            <TextView
+                android:id="@+id/labDev"
+                style="@style/textTitleStyle"
+                android:layout_width="100dp" />
+
+            <TextView
+                android:id="@+id/staff"
+                style="@style/textTitleStyle"
+                android:layout_width="80dp" />
+
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:background="@color/black" />
 
     </LinearLayout>
