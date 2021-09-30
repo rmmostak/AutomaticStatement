@@ -37,7 +37,7 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     private void makeMail() {
-        String sendTo = "rmmostak@gmail.com";
+        String sendTo = "nonetech.net@gmail.com";
         String sendSub = "Type your email subject";
         String sendBody = "Write your message here..";
 
@@ -56,7 +56,7 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     private void makeCall() {
-        String no="+8801780891662";
+        String no = "+8801780891662";
         Intent intent = new Intent(Intent.ACTION_CALL);
         intent.setData(Uri.parse("tel:" + no));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -68,7 +68,7 @@ public class AboutActivity extends AppCompatActivity {
             }
             ActivityOptions options = ActivityOptions.makeCustomAnimation(AboutActivity.this, R.anim.fade_in, R.anim.fade_out);
             startActivity(intent, options.toBundle());
-            Log.d("check",no);
+            Log.d("check", no);
         } else {
             ActivityOptions options = ActivityOptions.makeCustomAnimation(AboutActivity.this, R.anim.fade_in, R.anim.fade_out);
             startActivity(intent, options.toBundle());

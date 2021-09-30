@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "Statement.db";
 
     //for general note
-    public static int VERSION = 21;
+    public static int VERSION = 22;
     public static final String TABLE_NAME = "AutomaticStatement";
     public static final String SERIAL_NO = "SerialNo";
     public static final String SAMPLE_NO = "SampleNo";

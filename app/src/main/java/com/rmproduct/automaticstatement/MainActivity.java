@@ -72,15 +72,12 @@ public class MainActivity extends AppCompatActivity {
         builder.detectFileUriExposure();
 
         databaseHelper = new DatabaseHelper(this);
-        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        //SQLiteDatabase database =
+        databaseHelper.getWritableDatabase();
 
         stateList = findViewById(R.id.stateList);
         addEntry = findViewById(R.id.addEntry);
         refreshLayout = findViewById(R.id.refreshLayout);
-
-        /*Log.d("Total", databaseHelper.getSum(DatabaseHelper.TOTAL_MONEY) + "TK\n" +
-                databaseHelper.getSum(DatabaseHelper.TAX) + "TK\n" +
-                databaseHelper.getSum(DatabaseHelper.REMAIN_MONEY) + "TK");*/
 
         try {
             modelList.addAll(databaseHelper.statementModelList());
@@ -132,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Error", e.getMessage());
             }
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM YYYY", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
             String str = sdf.format(new Date());
             pickDate.setText(str);
             dateSt = str;
@@ -279,34 +276,35 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, AboutActivity.class));
 
         } else if (id == R.id.exportData) {
-            if (checkExternalStoragePermission(MainActivity.this)) {
-                String directory = Environment.getExternalStorageDirectory().getPath() + "/RmProduct/Automatic/Statement/Export/";
-                File file = new File(directory);
-                if (!file.exists()) {
-                    Log.v("File Created", String.valueOf(file.mkdirs()));
-                }
-                SQLiteToExcel sqLiteToExcel = new SQLiteToExcel(MainActivity.this, "Statement.db", directory);
-
-                databaseHelper.makeStatementRow(10000, 0, dateSt, "Total", databaseHelper.getSum(TOTAL_MONEY), databaseHelper.getSum(DatabaseHelper.TAX), databaseHelper.getSum(REMAIN_MONEY), databaseHelper.getSum(UNI_AUTHORITY), databaseHelper.getSum(TCS_WING), databaseHelper.getSum(LAB_CHECK), databaseHelper.getSum(TEST_COST), databaseHelper.getSum(DatabaseHelper.PI), databaseHelper.getSum(DatabaseHelper.CHAIR), databaseHelper.getSum(DatabaseHelper.TEACHERS), databaseHelper.getSum(DatabaseHelper.LAB_DEV), databaseHelper.getSum(DatabaseHelper.STAFF));
-
-                sqLiteToExcel.exportAllTables("export.xls", new SQLiteToExcel.ExportListener() {
-                    @Override
-                    public void onStart() {
-                        Log.d("Started", "Running!");
+            try {
+                if (checkExternalStoragePermission(MainActivity.this)) {
+                    String directory = Environment.getExternalStorageDirectory().getPath() + "/Export/";
+                    File file = new File(directory);
+                    if (!file.exists()) {
+                        Log.v("File Created", String.valueOf(file.mkdirs()));
                     }
+                    SQLiteToExcel sqLiteToExcel = new SQLiteToExcel(MainActivity.this, "Statement.db", directory);
 
-                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                    @Override
-                    public void onCompleted(String filePath) {
-                        databaseHelper.deleteStatement(10000);
+                    databaseHelper.makeStatementRow(10000, 0, dateSt, "Total", databaseHelper.getSum(TOTAL_MONEY), databaseHelper.getSum(DatabaseHelper.TAX), databaseHelper.getSum(REMAIN_MONEY), databaseHelper.getSum(UNI_AUTHORITY), databaseHelper.getSum(TCS_WING), databaseHelper.getSum(LAB_CHECK), databaseHelper.getSum(TEST_COST), databaseHelper.getSum(DatabaseHelper.PI), databaseHelper.getSum(DatabaseHelper.CHAIR), databaseHelper.getSum(DatabaseHelper.TEACHERS), databaseHelper.getSum(DatabaseHelper.LAB_DEV), databaseHelper.getSum(DatabaseHelper.STAFF));
 
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM YYYY", Locale.getDefault());
-                        String str = sdf.format(new Date());
+                    sqLiteToExcel.exportAllTables("export.xls", new SQLiteToExcel.ExportListener() {
+                        @Override
+                        public void onStart() {
+                            Log.d("Started", "Running!");
+                        }
 
-                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                        emailIntent.setType("text/plain");
-                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "CSIRL JUST Exported on " + str);
-                        Log.d("tag", "CSIRL JUST Exported on " + str);
+                        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                        @Override
+                        public void onCompleted(String filePath) {
+                            databaseHelper.deleteStatement(10000);
+
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+                            String str = sdf.format(new Date());
+
+                            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                            emailIntent.setType("application/pdf");
+                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "CSIRL JUST Exported on " + str);
+/*                        Log.d("tag", "CSIRL JUST Exported on " + str);
 
                         File root = new File("file://" + filePath);
                         if (!file.exists() || !file.canRead()) {
@@ -319,40 +317,48 @@ public class MainActivity extends AppCompatActivity {
                             uri = Uri.parse(root.getPath()); // My work-around for new SDKs, worked for me in Android 10 using Solid Explorer Text Editor as the external editor.
                         }
                         Log.d("root", uri.toString());
-                        emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                        startActivity(Intent.createChooser(emailIntent, "Share file using..."));
-                    }
+                        emailIntent.putExtra(Intent.EXTRA_STREAM, uri);*/
+                            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + filePath));
+                            startActivity(Intent.createChooser(emailIntent, "Share file using..."));
+                        }
 
-                    @Override
-                    public void onError(Exception e) {
-                        Log.d("export", e.getMessage());
-                    }
-                });
-            } else {
-                Log.d("Error", "Permission denied!");
+                        @Override
+                        public void onError(Exception e) {
+                            Log.d("export", e.getMessage());
+                        }
+                    });
+                } else {
+                    Log.d("Error", "Permission denied!");
+                }
+            } catch (Exception e) {
+                Log.d("exportError", e.getMessage());
             }
         } else if (id == R.id.deleteTable) {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
-            dialogBuilder.setTitle("Alert!");
-            dialogBuilder.setMessage("Do you want to delete this statement data?");
-            dialogBuilder.setPositiveButton("Yes", (dialog, which) -> {
+            try {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                dialogBuilder.setTitle("Alert!");
+                dialogBuilder.setMessage("Do you want to delete this statement data?");
+                dialogBuilder.setPositiveButton("Yes", (dialog, which) -> {
 
-                try {
-                    if (databaseHelper.dropStatement(TABLE_NAME)) {
-                        //sendEmail(filePath);
-                        Toast.makeText(MainActivity.this, "You have successfully deleted statement data!", Toast.LENGTH_LONG).show();
-                    } else {
-                        //sendEmail(filePath);
-                        Toast.makeText(MainActivity.this, "Something went wrong, Please try again later!", Toast.LENGTH_LONG).show();
+                    try {
+                        if (databaseHelper.dropStatement(TABLE_NAME)) {
+                            //sendEmail(filePath);
+                            Toast.makeText(MainActivity.this, "You have successfully deleted statement data!", Toast.LENGTH_LONG).show();
+                        } else {
+                            //sendEmail(filePath);
+                            Toast.makeText(MainActivity.this, "Something went wrong, Please try again later!", Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-                dialog.dismiss();
+                    dialog.dismiss();
 
-            }).setNegativeButton("Cancel", (dialog, which) -> {
-                dialog.dismiss();
-            }).show();
+                }).setNegativeButton("Cancel", (dialog, which) -> {
+                    dialog.dismiss();
+                }).show();
+            } catch (Exception e) {
+                Log.d("deleteError", e.getMessage());
+            }
         }
         return super.onOptionsItemSelected(item);
     }
