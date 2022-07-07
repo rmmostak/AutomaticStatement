@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/exportData"
-        android:icon="@drawable/export_icon_24"
+        android:icon="@drawable/ic_export"
         android:title="Export Data"
         app:showAsAction="always" />
 

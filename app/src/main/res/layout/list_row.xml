@@ -20,7 +20,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:orientation="horizontal">
 
             <TextView
@@ -28,80 +27,155 @@
                 style="@style/textTitleStyle"
                 android:layout_width="60dp" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
+
             <TextView
                 android:id="@+id/sampleNo"
                 style="@style/textTitleStyle"
                 android:layout_width="60dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
 
             <TextView
                 android:id="@+id/dateAccept"
                 style="@style/textTitleStyle"
                 android:layout_width="100dp" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
+
             <TextView
                 android:id="@+id/dept"
                 style="@style/textTitleStyle"
                 android:layout_width="80dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
 
             <TextView
                 android:id="@+id/totalEarn"
                 style="@style/textTitleStyle"
                 android:layout_width="100dp" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
+
             <TextView
                 android:id="@+id/tax"
                 style="@style/textTitleStyle"
                 android:layout_width="60dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
 
             <TextView
                 android:id="@+id/remainMoney"
                 style="@style/textTitleStyle"
                 android:layout_width="120dp" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
+
             <TextView
                 android:id="@+id/uniAuthority"
                 style="@style/textTitleStyle"
                 android:layout_width="100dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
 
             <TextView
                 android:id="@+id/tcsWing"
                 style="@style/textTitleStyle"
                 android:layout_width="80dp" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
+
             <TextView
                 android:id="@+id/moneyCheck"
                 style="@style/textTitleStyle"
                 android:layout_width="120dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
 
             <TextView
                 android:id="@+id/testCost"
                 style="@style/textTitleStyle"
                 android:layout_width="100dp" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
+
             <TextView
                 android:id="@+id/pi"
                 style="@style/textTitleStyle"
                 android:layout_width="80dp" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
+
             <TextView
                 android:id="@+id/chair"
                 style="@style/textTitleStyle"
-                android:layout_width="100dp" />
+                android:layout_width="110dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
 
             <TextView
                 android:id="@+id/teachers"
                 style="@style/textTitleStyle"
                 android:layout_width="100dp" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
+
             <TextView
                 android:id="@+id/labDev"
                 style="@style/textTitleStyle"
                 android:layout_width="100dp" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/black" />
+
             <TextView
                 android:id="@+id/staff"
                 style="@style/textTitleStyle"
-                android:layout_width="80dp" />
+                android:layout_width="60dp" />
 
         </LinearLayout>
 

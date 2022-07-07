@@ -34,6 +34,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="#E1E0E0"
                     android:orientation="horizontal">
 
                     <TextView
@@ -42,75 +43,150 @@
                         android:layout_width="60dp"
                         android:text="Serial\nNo" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
+
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="60dp"
                         android:text="Sample\nNo" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
 
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="100dp"
                         android:text="Date of\nAcceptance" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
+
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="80dp"
                         android:text="Department" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
 
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="100dp"
                         android:text="Total Earned\nMoney" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
+
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="60dp"
-                        android:text="Tax 10%" />
+                        android:text="Tax 15%" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
 
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="120dp"
                         android:text="Remaining Money\nafter deduction" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
+
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="100dp"
                         android:text="University\nAuthority 25%" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
 
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="80dp"
                         android:text="TCS Wing 5%" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
+
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="120dp"
                         android:text="Money provide\n to the Department" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
 
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="100dp"
                         android:text="Test Cost 40%" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
+
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="80dp"
                         android:text="PI 10%" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
 
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="110dp"
                         android:text="Chair/Director 5%" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
+
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="100dp"
                         android:text="Teachers 20%" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
+
                     <TextView
                         style="@style/textTitleStyle"
                         android:layout_width="100dp"
                         android:text="Lab Development\n15%" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black" />
 
                     <TextView
                         style="@style/textTitleStyle"
