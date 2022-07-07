@@ -16,7 +16,6 @@
         android:gravity="bottom"
         android:orientation="vertical">
 
-
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -61,7 +60,7 @@
             android:padding="5dp"
             android:text="@string/about_dev"
             android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/black"
             android:textIsSelectable="true" />
 

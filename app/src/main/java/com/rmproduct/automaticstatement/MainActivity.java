@@ -26,7 +26,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ajts.androidmads.library.SQLiteToExcel;
@@ -52,7 +51,7 @@ import static com.rmproduct.automaticstatement.DatabaseHelper.UNI_AUTHORITY;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static float TAX = 15, UNI_AUTH = 25, TCS = 5, TEST = 40, PI = 10, CHAIR = 5, TEACHERS = 20, LAB_DEV = 15, STAFF = 10, PERCENT = 100;
+    private static float TAX = 10, UNI_AUTH = 25, TCS = 5, TEST = 40, PI = 10, CHAIR = 5, TEACHERS = 20, LAB_DEV = 15, STAFF = 10, PERCENT = 100;
     public static final int REQUEST_EXTERNAL_PERMISSION_CODE = 666;
 
     private ListView stateList;
@@ -108,101 +107,98 @@ public class MainActivity extends AppCompatActivity {
         });
 
         addEntry.setOnClickListener(v -> {
+            Log.d("Exception", "e.getMessage()");
+            final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            LayoutInflater inflater = getLayoutInflater();
+            final View dialogView = inflater.inflate(R.layout.add_entry_layout, null);
+
+            dialogBuilder.setView(dialogView);
+
+            EditText serialNo = dialogView.findViewById(R.id.serialNo);
+            EditText addedAmount = dialogView.findViewById(R.id.addedMoney);
+            EditText addDept = dialogView.findViewById(R.id.addDept);
+            EditText sampleNo = dialogView.findViewById(R.id.addSample);
+            TextView pickDate = dialogView.findViewById(R.id.pickDate);
+            ImageButton addEntry = dialogView.findViewById(R.id.submitData);
+            ImageButton cancel = dialogView.findViewById(R.id.cancel);
+
             try {
-                final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-                LayoutInflater inflater = getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.add_entry_layout, null);
-
-                dialogBuilder.setView(dialogView);
-
-                EditText serialNo = dialogView.findViewById(R.id.serialNo);
-                EditText addedAmount = dialogView.findViewById(R.id.addedMoney);
-                EditText addDept = dialogView.findViewById(R.id.addDept);
-                EditText sampleNo = dialogView.findViewById(R.id.addSample);
-                TextView pickDate = dialogView.findViewById(R.id.pickDate);
-                ImageButton addEntry = dialogView.findViewById(R.id.submitData);
-                ImageButton cancel = dialogView.findViewById(R.id.cancel);
-
-                try {
-                    if (databaseHelper.countRow() < 1) {
-                        serialNo.setText("1");
-                    } else {
-                        serialNo.setText(String.valueOf(databaseHelper.countRow() + 1));
-                    }
-                } catch (Exception e) {
-                    Log.d("Error", e.getMessage());
+                if (databaseHelper.countRow() < 1) {
+                    serialNo.setText("1");
+                } else {
+                    serialNo.setText(String.valueOf(databaseHelper.countRow() + 1));
                 }
+            } catch (Exception e) {
+                Log.d("Error", e.getMessage());
+            }
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
-                String str = sdf.format(new Date());
-                pickDate.setText(str);
-                dateSt = str;
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM YYYY", Locale.getDefault());
+            String str = sdf.format(new Date());
+            pickDate.setText(str);
+            dateSt = str;
 
-                dialogBuilder.setTitle("Enter your Data");
-                final AlertDialog alertDialog = dialogBuilder.create();
-                alertDialog.show();
+            dialogBuilder.setTitle("Enter your Data");
+            final AlertDialog alertDialog = dialogBuilder.create();
+            alertDialog.show();
 
-                pickDate.setOnClickListener(v12 -> {
-                    Calendar calendar = Calendar.getInstance(Locale.getDefault());
-                    DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
-                            (view, year, month, dayOfMonth) -> {
-                                //todo
-                                Calendar newDate = Calendar.getInstance();
-                                newDate.set(year, month, dayOfMonth);
-                                pickDate.setText(sdf.format(newDate.getTime()));
-                                dateSt = sdf.format(newDate.getTime());
-                            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-                    datePickerDialog.show();
-                });
+            pickDate.setOnClickListener(v12 -> {
+                Calendar calendar = Calendar.getInstance(Locale.getDefault());
+                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
+                        (view, year, month, dayOfMonth) -> {
+                            //todo
+                            Calendar newDate = Calendar.getInstance();
+                            newDate.set(year, month, dayOfMonth);
+                            pickDate.setText(sdf.format(newDate.getTime()));
+                            dateSt = sdf.format(newDate.getTime());
+                        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.show();
+            });
 
-                cancel.setOnClickListener(v1 -> {
-                    alertDialog.dismiss();
-                });
+            cancel.setOnClickListener(v1 -> {
+                alertDialog.dismiss();
+            });
 
-                addEntry.setOnClickListener(v2 -> {
+            addEntry.setOnClickListener(v2 -> {
 
-                    if (!serialNo.getText().toString().equals("")) {
-                        if (!sampleNo.getText().toString().equals("")) {
-                            if (!addedAmount.getText().toString().equals("")) {
-                                if (!addDept.getText().toString().equals("")) {
+                if (!serialNo.getText().toString().equals("")) {
+                    if (!sampleNo.getText().toString().equals("")) {
+                        if (!addedAmount.getText().toString().equals("")) {
+                            if (!addDept.getText().toString().equals("")) {
 
-                                    try {
-                                        String slSt = serialNo.getText().toString();
-                                        int slNo = Integer.parseInt(slSt);
-                                        int sample = Integer.parseInt(sampleNo.getText().toString());
-                                        float amountLong = Float.parseFloat(addedAmount.getText().toString());
-                                        String deptSt = addDept.getText().toString();
-                                        if (!slSt.equals(databaseHelper.getValue(DatabaseHelper.SERIAL_NO, slSt))) {
-                                            setDataToDatabase(slNo, sample, amountLong, deptSt, dateSt);
-                                            alertDialog.dismiss();
-                                        } else {
-                                            serialNo.setError("Your entered serial no is exist,\n please enter a new one!");
-                                            serialNo.requestFocus();
-                                        }
-                                    } catch (Exception e) {
-                                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                try {
+                                    String slSt = serialNo.getText().toString();
+                                    int slNo = Integer.parseInt(slSt);
+                                    int sample = Integer.parseInt(sampleNo.getText().toString());
+                                    float amountLong = Float.parseFloat(addedAmount.getText().toString());
+                                    String deptSt = addDept.getText().toString();
+                                    if (!slSt.equals(databaseHelper.getValue(DatabaseHelper.SERIAL_NO, slSt))) {
+                                        setDataToDatabase(slNo, sample, amountLong, deptSt, dateSt);
+                                        alertDialog.dismiss();
+                                    } else {
+                                        serialNo.setError("Your entered serial no is exist,\n please enter a new one!");
+                                        serialNo.requestFocus();
                                     }
-                                } else {
-                                    addDept.setError("Please enter department!!");
-                                    addDept.requestFocus();
+                                } catch (Exception e) {
+                                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             } else {
-                                addedAmount.setError("Please enter amount!!");
-                                addedAmount.requestFocus();
+                                addDept.setError("Please enter department!!");
+                                addDept.requestFocus();
                             }
                         } else {
-                            sampleNo.setError("Please enter sample no!!");
-                            sampleNo.requestFocus();
+                            addedAmount.setError("Please enter amount!!");
+                            addedAmount.requestFocus();
                         }
                     } else {
-                        serialNo.setError("Please enter serial no!!");
-                        serialNo.requestFocus();
+                        sampleNo.setError("Please enter sample no!!");
+                        sampleNo.requestFocus();
                     }
+                } else {
+                    serialNo.setError("Please enter serial no!!");
+                    serialNo.requestFocus();
+                }
 
-                });
-            } catch (Exception e) {
-                Log.d("entryError", e.getMessage());
-            }
+            });
         });
     }
 
@@ -284,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (id == R.id.exportData) {
             if (checkExternalStoragePermission(MainActivity.this)) {
-                String directory = Environment.getExternalStorageDirectory().getPath() + "/Export/";
+                String directory = Environment.getExternalStorageDirectory().getPath() + "/RmProduct/Automatic/Statement/Export/";
                 File file = new File(directory);
                 if (!file.exists()) {
                     Log.v("File Created", String.valueOf(file.mkdirs()));
@@ -304,8 +300,13 @@ public class MainActivity extends AppCompatActivity {
                     public void onCompleted(String filePath) {
                         databaseHelper.deleteStatement(10000);
 
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM YYYY", Locale.getDefault());
                         String str = sdf.format(new Date());
+
+                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                        emailIntent.setType("text/plain");
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "CSIRL JUST Exported on " + str);
+                        Log.d("tag", "CSIRL JUST Exported on " + str);
 
                         File root = new File("file://" + filePath);
                         if (!file.exists() || !file.canRead()) {
@@ -317,22 +318,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             uri = Uri.parse(root.getPath()); // My work-around for new SDKs, worked for me in Android 10 using Solid Explorer Text Editor as the external editor.
                         }
-
-                        /*Uri uri = FileProvider.getUriForFile(MainActivity.this, getApplicationContext().getPackageName() + ".provider", root);
-
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.putExtra(Intent.EXTRA_EMAIL, new String[]{"fake@fake.edu"});
-                        i.putExtra(Intent.EXTRA_SUBJECT,"On The Job");
-                        //Log.d("URI@!@#!#!@##!", Uri.fromFile(pic).toString() + "   " + pic.exists());
-                        i.putExtra(Intent.EXTRA_TEXT,"All Detail of Email are here in message");
-                        i.putExtra(Intent.EXTRA_STREAM,uri);
-                        i.setType("image/png");
-                        context.startActivity(Intent.createChooser(i,"Share you on the jobing"));*/
-
-                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                        emailIntent.setType("text/plain");
-                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "CSIRL JUST Exported on " + str);
-                        Log.d("tag", "CSIRL JUST Exported on " + str);
+                        Log.d("root", uri.toString());
                         emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
                         startActivity(Intent.createChooser(emailIntent, "Share file using..."));
                     }
